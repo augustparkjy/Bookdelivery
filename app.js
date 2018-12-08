@@ -2,7 +2,7 @@ var express = require('express')
 app = express();
 var http = require('http')
 var router = require('./router/main')(app);
-
+var mysql = require('mysql')
 server = http.createServer(app);
 
 var bodyParser = require('body-parser');
@@ -13,15 +13,29 @@ app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 app.engine('html', require('ejs').renderFile);
 
-// app.get('/', function(req, res) {
-//     res.sendFile(__dirname+ '/home.html');
-// });
 
-// app.post('/Login/', function(req,res){
-//     var message = "<H3> Your ID is " + req.body.yourid + ", Your PASSWORD is " + req.body.yourpw + "</H3>";
-//     console.log(req.query);
-//     res.send(message);
-// })
+var con = mysql.createConnection({
+    host: '127.0.0.1',
+    user: 'root',
+    password: 'root',
+    port: '3306'
+//   host     : process.env.RDS_HOSTNAME,
+//   user     : process.env.RDS_USERNAME,
+//   password : process.env.RDS_PASSWORD,
+//   port     : process.env.RDS_PORT
+
+});
+
+con.connect(function(err) {
+    if (err) throw err;
+    con.query("use bd");
+    con.query("SELECT * FROM test", function (err, result, fields) {
+      if (err) throw err;
+      console.log(result);
+    });
+  });
+
+// con.end();
 
 server.listen(8081, function(){
     console.log('Express server listening on port ' + server.address().port);
